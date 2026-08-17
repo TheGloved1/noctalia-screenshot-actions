@@ -1,0 +1,68 @@
+# Screenshot Actions — Region capture → menu for Swappy markup or OCR
+# 
+# Usage: Press SUPER+SHIFT+S to capture a region, then choose:
+#   - Open in Swappy (markup/annotation)
+#   - Find Text (OCR with inline result panel)
+#
+# Dependencies: slurp, grim, swappy, tesseract, wl-copy, notify-send
+
+id = "user/screenshot-actions"
+name = "Screenshot Actions"
+version = "1.0.0"
+plugin_api = 13
+author = "gloves"
+license = "MIT"
+description = "Region screenshot → menu for Swappy markup or OCR"
+tags = ["screenshot", "ocr", "annotate", "utility"]
+dependencies = ["slurp", "grim", "swappy", "tesseract", "wl-copy", "notify-send"]
+
+# ── Settings (editable in Settings → Plugins) ──
+
+[[setting]]
+key = "screenshot-path"
+type = "folder"
+label_key = "settings.screenshot_path.label"
+description_key = "settings.screenshot_path.description"
+default = "~/Pictures/Screenshots"
+
+[[setting]]
+key = "ocr-language"
+type = "string"
+label_key = "settings.ocr_language.label"
+description_key = "settings.ocr_language.description"
+default = "eng"
+
+[[setting]]
+key = "open-in-swappy"
+type = "bool"
+label_key = "settings.open_in_swappy.label"
+description_key = "settings.open_in_swappy.description"
+default = true
+
+# ── Panel Definitions ──
+
+# Main action menu: image preview + 2 buttons (Open / Find Text)
+[[panel]]
+id = "actions"
+entry = "panel.luau"
+width = 480
+height = 320
+placement = "floating"
+position = "center"
+keyboard_focus = "on_demand"
+capture_keys = ["Tab", "Backtab", "Up", "Down", "Left", "Right", "Return", "Enter", "Space", "Escape"]
+
+# Inline OCR result panel: editable text + copy button
+[[panel]]
+id = "ocr-result"
+entry = "result.luau"
+width = 560
+height = 480
+placement = "floating"
+position = "center"
+
+# ── Service (headless capture coordinator) ──
+
+[[service]]
+id = "service"
+entry = "service.luau"
