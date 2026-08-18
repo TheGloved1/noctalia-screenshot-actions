@@ -49,15 +49,15 @@ default = "eng"
 [[setting]]
 key = "panel-placement"
 type = "string"
-label = "Panel Placement"
-description = "How the panels appear (floating, attached, overlay)"
+label_key = "settings.panel_placement.label"
+description_key = "settings.panel_placement.description"
 default = "floating"
 
 [[setting]]
 key = "panel-along-bar"
 type = "string"
-label = "Along Bar"
-description = "Which edge the panel aligns to when attached"
+label_key = "settings.panel_along_bar.label"
+description_key = "settings.panel_along_bar.description"
 default = "center"
 
 # ── Entries ──
