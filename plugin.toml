@@ -55,7 +55,6 @@ default = "floating"
 options = [
   { value = "floating", label_key = "settings.panel_placement.options.floating" },
   { value = "attached", label_key = "settings.panel_placement.options.attached" },
-  { value = "overlay", label_key = "settings.panel_placement.options.overlay" },
 ]
 
 [[setting]]
@@ -63,11 +62,10 @@ key = "panel-along-bar"
 type = "select"
 label_key = "settings.panel_along_bar.label"
 description_key = "settings.panel_along_bar.description"
-default = "center"
+default = "centered"
 options = [
-  { value = "start", label_key = "settings.panel_along_bar.options.start" },
-  { value = "center", label_key = "settings.panel_along_bar.options.center" },
-  { value = "end", label_key = "settings.panel_along_bar.options.end" },
+  { value = "centered", label_key = "settings.panel_along_bar.options.centered" },
+  { value = "near-trigger", label_key = "settings.panel_along_bar.options.near_trigger" },
 ]
 
 # ── Entries ──
