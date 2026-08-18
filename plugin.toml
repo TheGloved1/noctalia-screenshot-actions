@@ -46,13 +46,6 @@ label_key = "settings.ocr_language.label"
 description_key = "settings.ocr_language.description"
 default = "eng"
 
-[[setting]]
-key = "open-in-swappy"
-type = "bool"
-label_key = "settings.open_in_swappy.label"
-description_key = "settings.open_in_swappy.description"
-default = true
-
 # ── Entries ──
 
 # Bar widget: crosshair glyph. Left click → immediate region capture.

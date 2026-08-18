@@ -3,11 +3,6 @@
 
 local STATE_LAST_CAPTURE = "lastCapture"
 
-local function tr(key, subst)
-    if subst then return noctalia.tr(key, subst) end
-    return noctalia.tr(key)
-end
-
 local function shellQuote(value)
     return "'" .. tostring(value):gsub("'", [["'"']]) .. "'"
 end

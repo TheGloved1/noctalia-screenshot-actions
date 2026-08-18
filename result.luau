@@ -7,12 +7,6 @@ local function shellQuote(value)
     return "'" .. tostring(value):gsub("'", [["'"']]) .. "'"
 end
 
-local function getConfig(key, default)
-    local v = noctalia.getConfig(key)
-    if v == nil then return default end
-    return v
-end
-
 local function copyText(text)
     if text and text ~= "" then
         noctalia.copyToClipboard(text, "text/plain;charset=utf-8")
