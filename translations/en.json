@@ -7,8 +7,14 @@
   "settings.ocr_language.description": "Tesseract language code (e.g. eng, deu, fra)",
   "settings.panel_placement.label": "Panel Placement",
   "settings.panel_placement.description": "How the panels appear (floating, attached, overlay)",
+  "settings.panel_placement.options.floating": "Floating",
+  "settings.panel_placement.options.attached": "Attached to bar",
+  "settings.panel_placement.options.overlay": "Overlay",
   "settings.panel_along_bar.label": "Along Bar",
   "settings.panel_along_bar.description": "Which edge the panel aligns to when attached",
+  "settings.panel_along_bar.options.start": "Start (left)",
+  "settings.panel_along_bar.options.center": "Center",
+  "settings.panel_along_bar.options.end": "End (right)",
   "shortcut.label": "Screenshot",
   "plugin_name": "Screenshot Actions"
 }

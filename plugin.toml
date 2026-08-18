@@ -48,17 +48,27 @@ default = "eng"
 
 [[setting]]
 key = "panel-placement"
-type = "string"
+type = "select"
 label_key = "settings.panel_placement.label"
 description_key = "settings.panel_placement.description"
 default = "floating"
+options = [
+  { value = "floating", label_key = "settings.panel_placement.options.floating" },
+  { value = "attached", label_key = "settings.panel_placement.options.attached" },
+  { value = "overlay", label_key = "settings.panel_placement.options.overlay" },
+]
 
 [[setting]]
 key = "panel-along-bar"
-type = "string"
+type = "select"
 label_key = "settings.panel_along_bar.label"
 description_key = "settings.panel_along_bar.description"
 default = "center"
+options = [
+  { value = "start", label_key = "settings.panel_along_bar.options.start" },
+  { value = "center", label_key = "settings.panel_along_bar.options.center" },
+  { value = "end", label_key = "settings.panel_along_bar.options.end" },
+]
 
 # ── Entries ──
 
