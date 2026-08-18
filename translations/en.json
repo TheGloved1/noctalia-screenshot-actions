@@ -1,10 +1,10 @@
 {
   "settings.screenshot_path.label": "Screenshot folder",
   "settings.screenshot_path.description": "Where to save screenshots",
+  "settings.filename_format.label": "Filename format",
+  "settings.filename_format.description": "strftime pattern for screenshot filenames",
   "settings.ocr_language.label": "OCR language",
   "settings.ocr_language.description": "Tesseract language code (e.g. eng, deu, fra)",
-  "settings.open_in_swappy.label": "Open in Swappy",
-  "settings.open_in_swappy.description": "Automatically open capture in Swappy for annotation",
   "shortcut.label": "Screenshot",
   "plugin_name": "Screenshot Actions"
 }
