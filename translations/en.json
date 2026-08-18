@@ -1,10 +1,4 @@
 {
-  "settings.screenshot_path.label": "Screenshot folder",
-  "settings.screenshot_path.description": "Where to save screenshots",
-  "settings.filename_format.label": "Filename format",
-  "settings.filename_format.description": "strftime pattern for screenshot filenames",
-  "settings.ocr_language.label": "OCR language",
-  "settings.ocr_language.description": "Tesseract language code (e.g. eng, deu, fra)",
   "settings.panel_placement.label": "Placement",
   "settings.panel_placement.description": "How the panels appear",
   "settings.panel_placement.options.floating": "Floating",

@@ -26,27 +26,6 @@ dependencies = [
 # ── Settings (editable in Settings → Plugins) ──
 
 [[setting]]
-key = "screenshot-path"
-type = "folder"
-label_key = "settings.screenshot_path.label"
-description_key = "settings.screenshot_path.description"
-default = "~/Pictures/Screenshots"
-
-[[setting]]
-key = "filename-format"
-type = "string"
-label_key = "settings.filename_format.label"
-description_key = "settings.filename_format.description"
-default = "%Y-%b_%H-%M-%S"
-
-[[setting]]
-key = "ocr-language"
-type = "string"
-label_key = "settings.ocr_language.label"
-description_key = "settings.ocr_language.description"
-default = "eng"
-
-[[setting]]
 key = "panel-placement"
 type = "select"
 label_key = "settings.panel_placement.label"
