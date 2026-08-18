@@ -46,6 +46,20 @@ label_key = "settings.ocr_language.label"
 description_key = "settings.ocr_language.description"
 default = "eng"
 
+[[setting]]
+key = "panel-placement"
+type = "string"
+label = "Panel Placement"
+description = "How the panels appear (floating, attached, overlay)"
+default = "floating"
+
+[[setting]]
+key = "panel-along-bar"
+type = "string"
+label = "Along Bar"
+description = "Which edge the panel aligns to when attached"
+default = "center"
+
 # ── Entries ──
 
 # Bar widget: crosshair glyph. Left click → immediate region capture.
@@ -64,8 +78,6 @@ id = "actions"
 entry = "panel.luau"
 width = 480
 height = 320
-placement = "floating"
-position = "center"
 keyboard_focus = "on_demand"
 capture_keys = [
   "Tab",
@@ -86,8 +98,6 @@ id = "ocr-result"
 entry = "result.luau"
 width = 560
 height = 480
-placement = "floating"
-position = "center"
 
 # Headless capture coordinator
 [[service]]
