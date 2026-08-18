@@ -126,12 +126,6 @@ local function render()
             }),
         }),
 
-        ui.label({
-            text = "Screenshot saved to clipboard and ~/Pictures/Screenshots",
-            fontSize = 10,
-            color = "on_surface_variant",
-            textAlign = "center",
-        }),
     })
 
     panel.render(body)
