@@ -56,7 +56,25 @@ local function render()
 
         ui.row({ align = "center", gap = 12 }, {
             ui.button({
-                text = "Open in Swappy",
+                text = "Copy",
+                glyph = "copy",
+                flexGrow = 1,
+                controlSize = "lg",
+                variant = "default",
+                onClick = function()
+                    local path = noctalia.state.get(STATE_LAST_CAPTURE)
+                    if not path or path == "" then return end
+                    if noctalia.commandExists("wl-copy") then
+                        noctalia.runAsync("wl-copy < " .. shellQuote(path))
+                        noctalia.notify("Screenshot copied", "Image copied to clipboard")
+                    else
+                        noctalia.notifyError("wl-copy not installed")
+                    end
+                    panel.close()
+                end,
+            }),
+            ui.button({
+                text = "Open",
                 glyph = "pencil",
                 flexGrow = 1,
                 controlSize = "lg",

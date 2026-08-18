@@ -9,7 +9,7 @@
 id = "gloves/screenshot-actions"
 name = "Screenshot Actions"
 version = "1.0.0"
-plugin_api = 13
+plugin_api = 18
 author = "gloves"
 license = "MIT"
 description = "Region screenshot → menu for Swappy markup or OCR"
@@ -93,8 +93,8 @@ height = 480
 [[panel]]
 id = "history"
 entry = "history.luau"
-width = 720
-height = 500
+width = 920
+height = 780
 keyboard_focus = "exclusive"
 capture_keys = [
   "Up",

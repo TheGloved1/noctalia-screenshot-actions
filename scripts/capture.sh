@@ -14,14 +14,23 @@ time=$(date "+$FILENAME_FORMAT")
 file="Screenshot_${time}_${RANDOM}.png"
 check_file="$SCREENSHOT_DIR/$file"
 
-# Give any transient UI (panel close animation) time to clear
-sleep 0.2
+# Freeze the screen so region selection happens over a static frame
+WAYFREEZE_PID=""
+if command -v wayfreeze >/dev/null 2>&1; then
+    wayfreeze &
+    WAYFREEZE_PID=$!
+    sleep 0.15
+fi
+trap '[[ -n "$WAYFREEZE_PID" ]] && kill "$WAYFREEZE_PID" 2>/dev/null || true' EXIT
 
 # Capture region using slurp for geometry selection
 geometry=$(slurp)
 if [[ -n "$geometry" ]]; then
     grim -g "$geometry" - >"$check_file"
 fi
+
+[[ -n "$WAYFREEZE_PID" ]] && kill "$WAYFREEZE_PID" 2>/dev/null || true
+WAYFREEZE_PID=""
 
 if [[ ! -s "$check_file" ]]; then
     echo "cancelled" >&2
