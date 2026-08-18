@@ -49,16 +49,6 @@ options = [
 
 # ── Entries ──
 
-# Bar widget: crosshair glyph. Left click → immediate region capture.
-[[widget]]
-id = "widget"
-entry = "widget.luau"
-
-# Control-center quick tile. Mirrors the bar widget.
-[[shortcut]]
-id = "toggle"
-entry = "shortcut.luau"
-
 # Main action menu: image preview + 2 buttons (Open / Find Text)
 [[panel]]
 id = "actions"

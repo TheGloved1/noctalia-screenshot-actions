@@ -25,14 +25,13 @@ local function render()
             }),
             ui.label({ text = "Find Text (OCR)", flexGrow = 1, fontSize = 18, fontWeight = "bold", color = "on_surface" }),
             ui.button({
-                text = "Clear",
+                text = "Back",
+                glyph = "arrow-left",
                 variant = "ghost",
                 controlSize = "sm",
                 onClick = function()
-                    noctalia.state.set("ocrResult", nil)
-                    noctalia.state.set("ocrEditText", "")
-                    noctalia.state.set("activeTool", nil)
                     panel.close()
+                    noctalia.togglePanel("gloves/screenshot-actions:actions")
                 end,
             }),
             ui.button({ glyph = "close", onClick = function() panel.close() end }),
