@@ -1,20 +1,24 @@
 --!nonstrict
 -- Screenshot Actions — History panel
 -- Browse past screenshots as a thumbnail grid (wallpaper-switcher layout).
--- Selecting a tile loads it into the actions panel.
+-- Selecting a tile loads it into the actions panel. The grid renders only the
+-- visible window of shots; arrow keys move the cursor and slide the window one
+-- row at a time so the selection is never hidden.
 
 local PANEL_WIDTH = 720
 local PANEL_PADDING = 28
-local COLUMNS = 3
+local COLUMNS = 4
+local ROWS_VISIBLE = 3
+local VISIBLE = COLUMNS * ROWS_VISIBLE
 local COLUMN_GAP = 12
-local PAGE_SIZE = 12
+local ROW_GAP = 12
 local TILE_RADIUS = 12
+local SCROLLBAR_WIDTH = 6
 local SCREENSHOT_DIR = noctalia.expandPath("~/Pictures/Screenshots")
 
 local shots = {} -- { { path =, name =, mtime = }, ... }
-local page = 1
-local cursor = 0 -- keyboard cursor, 1-based index into shots; 0 = none
-local render
+local cursor = 1
+local windowStart = 1
 
 local function extensionOf(name)
   local ext = name:match("%.([%a%d]+)$")
@@ -42,17 +46,6 @@ local function loadShots()
     if a.mtime ~= b.mtime then return a.mtime > b.mtime end
     return a.name > b.name
   end)
-  page = 1
-end
-
-local function clampCursor()
-  if #shots == 0 then
-    cursor = 0
-  elseif cursor < 1 then
-    cursor = 1
-  elseif cursor > #shots then
-    cursor = #shots
-  end
 end
 
 -- ── Actions ────────────────────────────────────────────────────────────────
@@ -63,19 +56,53 @@ local function openShot(shot)
   noctalia.togglePanel("gloves/screenshot-actions:actions")
 end
 
--- ── Rendering ──────────────────────────────────────────────────────────────
+-- ── Window/cursor bookkeeping ──────────────────────────────────────────────
 
-local function totalPages()
-  return math.max(1, math.ceil(#shots / PAGE_SIZE))
+local function clampCursor()
+  if #shots == 0 then
+    cursor = 0
+    windowStart = 1
+    return
+  end
+  if cursor < 1 then cursor = 1 end
+  if cursor > #shots then cursor = #shots end
 end
 
+-- Keep the cursor inside the visible window; when it leaves, slide the window
+-- so it re-enters at the opposite edge (scrolls the grid exactly one row).
+local function alignWindow()
+  if #shots == 0 then
+    windowStart = 1
+    return
+  end
+  windowStart = math.max(1, math.min(windowStart, #shots))
+  if cursor < windowStart then
+    windowStart = cursor
+  elseif cursor > windowStart + VISIBLE - 1 then
+    windowStart = cursor - (VISIBLE - COLUMNS)
+  end
+  windowStart = math.max(1, math.min(windowStart, #shots))
+end
+
+local function moveCursor(next)
+  cursor = next
+  clampCursor()
+  alignWindow()
+end
+
+-- ── Rendering ──────────────────────────────────────────────────────────────
+
 local function columnWidth()
-  return math.floor(((PANEL_WIDTH - PANEL_PADDING) - COLUMN_GAP * (COLUMNS - 1)) / COLUMNS)
+  local reserved = 0
+  if #shots > VISIBLE then
+    reserved = SCROLLBAR_WIDTH + 12
+  end
+  return math.floor(((PANEL_WIDTH - PANEL_PADDING - reserved) - COLUMN_GAP * (COLUMNS - 1)) / COLUMNS)
 end
 
 local function tileSize()
   local width = columnWidth()
-  return width, math.floor(width * 9 / 16)
+  return width, 100
 end
 
 local function shotTile(shot, index)
@@ -83,13 +110,14 @@ local function shotTile(shot, index)
   local isCursor = index == cursor
   local isLast = shot.path == noctalia.state.get("lastCapture")
 
-  local border, borderWidth, accent
+  local border = "outline"
+  local borderWidth = 1
   if isCursor then
-    border, borderWidth, accent = "primary", 3, "primary"
+    border = "primary"
+    borderWidth = 3
   elseif isLast then
-    border, borderWidth, accent = "secondary", 2, "secondary"
-  else
-    border, borderWidth, accent = "outline", 1, "on_surface_variant"
+    border = "secondary"
+    borderWidth = 2
   end
 
   return ui.column({ key = shot.path, gap = 4, flexGrow = 1, align = "center" }, {
@@ -109,7 +137,7 @@ local function shotTile(shot, index)
     ui.label({
       text = shot.name,
       fontSize = 11,
-      color = accent,
+      color = isCursor and "primary" or (isLast and "secondary" or "on_surface_variant"),
       maxLines = 1,
       maxWidth = frameWidth,
       textAlign = "center",
@@ -119,59 +147,84 @@ end
 
 local function shotGrid()
   if #shots == 0 then
-    return ui.column({ gap = 8, align = "center", paddingV = 48 }, {
+    return ui.column({ flexGrow = 1, gap = 8, align = "center", paddingV = 48 }, {
       ui.glyph({ name = "photo-off", size = 40, color = "outline" }),
       ui.label({ text = "No screenshots yet", fontSize = 14, color = "on_surface_variant" }),
     })
   end
 
-  local first = (page - 1) * PAGE_SIZE + 1
-  local last = math.min(first + PAGE_SIZE - 1, #shots)
   local rows = {}
   local row = {}
-  for i = first, last do
+  local last = math.min(windowStart + VISIBLE - 1, #shots)
+  for i = windowStart, last do
     table.insert(row, shotTile(shots[i], i))
     if #row == COLUMNS or i == last then
       table.insert(rows, ui.row({ gap = COLUMN_GAP, align = "stretch" }, row))
       row = {}
     end
   end
-  return ui.column({ gap = 12, align = "stretch" }, rows)
+  return ui.column({ flexGrow = 1, gap = ROW_GAP, align = "stretch" }, rows)
 end
 
-render = function()
+local function scrollbar()
+  if #shots <= VISIBLE then
+    return nil
+  end
+  local frac = (windowStart - 1) / math.max(1, #shots - VISIBLE)
+  local thumb = math.max(VISIBLE / #shots, 0.06)
+  frac = math.max(0, math.min(frac, 1 - thumb))
+  return ui.column({ width = 6, radius = 3, fill = "surface_variant", align = "stretch" }, {
+    ui.spacer({ flexGrow = frac }),
+    ui.box({ width = 6, radius = 3, fill = "on_surface_variant", flexGrow = thumb }),
+    ui.spacer({ flexGrow = math.max(0, 1 - frac - thumb) }),
+  })
+end
+
+local function render()
   panel.render(ui.column({ flexGrow = 1, gap = 12, align = "stretch" }, {
     ui.row({ align = "center", justify = "space_between", gap = 8 }, {
       ui.label({ text = "Screenshot History", fontSize = 16, fontWeight = "bold", color = "on_surface", flexGrow = 1 }),
       ui.button({ glyph = "close", onClick = "onClose" }),
     }),
 
-    ui.scroll({ flexGrow = 1, gap = 12 }, {
+    ui.row({ flexGrow = 1, gap = 12, align = "stretch" }, {
       shotGrid(),
-    }),
-
-    ui.row({ align = "center", justify = "space_between", gap = 8 }, {
-      ui.button({ glyph = "chevron-left", variant = "ghost", onClick = "onPrevPage", enabled = page > 1 }),
-      ui.label({ text = tostring(page) .. " / " .. tostring(totalPages()), color = "on_surface_variant" }),
-      ui.button({ glyph = "chevron-right", variant = "ghost", onClick = "onNextPage", enabled = page < totalPages() }),
+      scrollbar(),
     }),
   }))
+end
+
+-- ── Key handling ────────────────────────────────────────────────────────────
+
+function onKey(chord, pressed)
+  if not pressed or #shots == 0 then
+    return
+  end
+
+  if chord == "Right" or chord == "ctrl+l" then
+    moveCursor(cursor + 1)
+  elseif chord == "Left" or chord == "ctrl+h" then
+    moveCursor(cursor - 1)
+  elseif chord == "Down" or chord == "ctrl+j" then
+    moveCursor(cursor + COLUMNS)
+  elseif chord == "Up" or chord == "ctrl+k" then
+    moveCursor(cursor - COLUMNS)
+  elseif chord == "Return" or chord == "Enter" or chord == "Space" then
+    openShot(shots[cursor])
+    return
+  else
+    return
+  end
+  render()
 end
 
 -- ── Callbacks ──────────────────────────────────────────────────────────────
 
 function onOpen(_context)
   loadShots()
-  local last = noctalia.state.get("lastCapture")
-  cursor = 0
-  for i, shot in ipairs(shots) do
-    if shot.path == last then
-      cursor = i
-      break
-    end
-  end
+  cursor = 1
   clampCursor()
-  page = math.max(1, math.floor((cursor - 1) / PAGE_SIZE) + 1)
+  alignWindow()
   render()
 end
 
@@ -179,48 +232,10 @@ function onClose()
   panel.close()
 end
 
-function onKey(chord, pressed)
-  if not pressed or #shots == 0 then
-    return
-  end
-  if chord == "Right" then
-    cursor = math.min(cursor + 1, #shots)
-  elseif chord == "Left" then
-    cursor = math.max(cursor - 1, 1)
-  elseif chord == "Down" then
-    cursor = math.min(cursor + COLUMNS, #shots)
-  elseif chord == "Up" then
-    cursor = math.max(cursor - COLUMNS, 1)
-  elseif chord == "Return" or chord == "Enter" or chord == "Space" then
-    if cursor > 0 then
-      openShot(shots[cursor])
-    end
-    return
-  else
-    return
-  end
-  page = math.floor((cursor - 1) / PAGE_SIZE) + 1
-  render()
-end
-
-function onPrevPage()
-  if page > 1 then
-    page -= 1
-    render()
-  end
-end
-
-function onNextPage()
-  if page < totalPages() then
-    page += 1
-    render()
-  end
-end
-
 -- Refresh the grid when a new capture lands while the panel is open.
 noctalia.state.watch("lastCapture", function(_)
   loadShots()
   clampCursor()
-  page = math.max(1, math.floor((cursor - 1) / PAGE_SIZE) + 1)
+  alignWindow()
   render()
 end)

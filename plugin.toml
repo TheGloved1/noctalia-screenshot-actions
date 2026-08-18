@@ -88,7 +88,8 @@ height = 480
 
 # Screenshot history: thumbnail grid of past captures (wallpaper-switcher layout).
 # Open via IPC: noctalia msg panel-toggle gloves/screenshot-actions:history
-# Selecting a tile opens the actions panel with that screenshot.
+# Selecting a tile opens the actions panel with that screenshot. Arrow keys
+# navigate the grid; going past the last row scrolls the grid one row.
 [[panel]]
 id = "history"
 entry = "history.luau"
@@ -100,10 +101,13 @@ capture_keys = [
   "Down",
   "Left",
   "Right",
+  "ctrl+h",
+  "ctrl+j",
+  "ctrl+k",
+  "ctrl+l",
   "Return",
   "Enter",
   "Space",
-  "Escape",
 ]
 
 # Headless capture coordinator
