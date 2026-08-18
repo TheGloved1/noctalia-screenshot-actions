@@ -1,12 +1,12 @@
 # Screenshot Actions — Region capture → menu for Swappy markup or OCR
-# 
+#
 # Usage: Press SUPER+SHIFT+S to capture a region, then choose:
 #   - Open in Swappy (markup/annotation)
 #   - Find Text (OCR with inline result panel)
 #
 # Dependencies: slurp, grim, swappy, tesseract, wl-copy, notify-send
 
-id = "user/screenshot-actions"
+id = "gloves/screenshot-actions"
 name = "Screenshot Actions"
 version = "1.0.0"
 plugin_api = 13
@@ -14,7 +14,14 @@ author = "gloves"
 license = "MIT"
 description = "Region screenshot → menu for Swappy markup or OCR"
 tags = ["screenshot", "ocr", "annotate", "utility"]
-dependencies = ["slurp", "grim", "swappy", "tesseract", "wl-copy", "notify-send"]
+dependencies = [
+  "slurp",
+  "grim",
+  "swappy",
+  "tesseract",
+  "wl-copy",
+  "notify-send",
+]
 
 # ── Settings (editable in Settings → Plugins) ──
 
@@ -24,6 +31,13 @@ type = "folder"
 label_key = "settings.screenshot_path.label"
 description_key = "settings.screenshot_path.description"
 default = "~/Pictures/Screenshots"
+
+[[setting]]
+key = "filename-format"
+type = "string"
+label_key = "settings.filename_format.label"
+description_key = "settings.filename_format.description"
+default = "%Y-%b_%H-%M-%S"
 
 [[setting]]
 key = "ocr-language"
@@ -39,7 +53,17 @@ label_key = "settings.open_in_swappy.label"
 description_key = "settings.open_in_swappy.description"
 default = true
 
-# ── Panel Definitions ──
+# ── Entries ──
+
+# Bar widget: crosshair glyph. Left click → immediate region capture.
+[[widget]]
+id = "widget"
+entry = "widget.luau"
+
+# Control-center quick tile. Mirrors the bar widget.
+[[shortcut]]
+id = "toggle"
+entry = "shortcut.luau"
 
 # Main action menu: image preview + 2 buttons (Open / Find Text)
 [[panel]]
@@ -50,7 +74,18 @@ height = 320
 placement = "floating"
 position = "center"
 keyboard_focus = "on_demand"
-capture_keys = ["Tab", "Backtab", "Up", "Down", "Left", "Right", "Return", "Enter", "Space", "Escape"]
+capture_keys = [
+  "Tab",
+  "Backtab",
+  "Up",
+  "Down",
+  "Left",
+  "Right",
+  "Return",
+  "Enter",
+  "Space",
+  "Escape",
+]
 
 # Inline OCR result panel: editable text + copy button
 [[panel]]
@@ -61,8 +96,7 @@ height = 480
 placement = "floating"
 position = "center"
 
-# ── Service (headless capture coordinator) ──
-
+# Headless capture coordinator
 [[service]]
 id = "service"
 entry = "service.luau"

@@ -14,28 +14,19 @@ time=$(date "+$FILENAME_FORMAT")
 file="Screenshot_${time}_${RANDOM}.png"
 check_file="$SCREENSHOT_DIR/$file"
 
-# Capture region
-tmpfile=$(mktemp --suffix=.png)
-wayfreeze --hide-cursor &
-frozen=$!
-trap 'kill "$frozen" 2>/dev/null; wait "$frozen" 2>/dev/null || true; rm -f "$tmpfile"' EXIT
-
+# Give any transient UI (panel close animation) time to clear
 sleep 0.2
+
+# Capture region using slurp for geometry selection
 geometry=$(slurp)
 if [[ -n "$geometry" ]]; then
-    grim -g "$geometry" - >"$tmpfile"
+    grim -g "$geometry" - >"$check_file"
 fi
-kill "$frozen" 2>/dev/null
-wait "$frozen" 2>/dev/null || true
-trap - EXIT
 
-if [[ ! -s "$tmpfile" ]]; then
+if [[ ! -s "$check_file" ]]; then
     echo "cancelled" >&2
     exit 1
 fi
-
-# Save screenshot
-mv "$tmpfile" "$check_file"
 
 # Copy to clipboard
 wl-copy <"$check_file"
@@ -48,8 +39,8 @@ elif command -v pw-play >/dev/null 2>&1; then
 fi
 
 # Notify
-notify-send -u low -t 2000 -i "$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Pictures")/Screenshots" \
-    "Screenshot" " Saved to $(basename "$check_file")" 2>/dev/null || true
+notify-send -u low -t 2000 \
+    "Screenshot" "Saved to $(basename "$check_file")" 2>/dev/null || true
 
 # Output path for service to capture
 echo "$check_file"
